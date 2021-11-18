@@ -7,6 +7,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import shutil
+import glob
 import controller.des.exit_button as exit_button
 import controller.des.new_button as new_button
 import controller.des.upload_button as upload_button
@@ -22,6 +25,7 @@ class des_layout(object):
         self.controls = []
         self.figure_agg = None
         self.data_frame = pd.DataFrame()
+        self.data_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "\data_source"
     
     def self_layout(self, **kwargs):
         sg.theme('Dark Blue 3')
@@ -73,7 +77,7 @@ class des_layout(object):
                 for control in self.controls:
                     cont = control(event, values, {'view':self})
                 if event == 'Select CSV File':
-                    file_path = sg.PopupGetFile('Please select a data source', file_types=(("CSV Files", "*.csv"),), initial_folder=r"../data_source/")
+                    file_path = sg.PopupGetFile('Please select a data source', file_types=(("CSV Files", "*.csv"),), initial_folder=self.data_path)
                     if file_path:
                         self.delete_figure_agg()
                         self.data_frame = pd.read_csv(file_path).pivot('place', 'group', 'count')
@@ -81,6 +85,9 @@ class des_layout(object):
                         fig = plt.gcf()
                         self.figure_agg = self.draw_figure(self.window['-CANVAS-'].TKCanvas, fig)
                 if event == 'Upload CSV File':
-                    file_path = sg.PopupGetFile('Please select a data source', file_types=(("CSV Files", "*.csv"),), initial_folder=r"C:\\")
+                    file_path = sg.PopupGetFile('Please select a data source', file_types=(("CSV Files", "*.csv"),), initial_folder="C:\\")
+                    if file_path:
+                        if not glob.glob(self.data_path + "\{}".format(os.path.basename(file_path))):
+                            shutil.copy(file_path, self.data_path)
             self.window.close()
             
