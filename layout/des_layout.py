@@ -12,13 +12,25 @@ import shutil
 import glob
 import controller.des.exit_button as exit_button
 import controller.des.new_button as new_button
-import controller.des.upload_button as upload_button
 
 class des_layout(object):
-    des_list = []
-    current_des = 0
+    '''
+    A class representing a data explorer screen.
+    
+    Attributes:
+        window: the window the des gui layout is applied to.
+        layout: the list of elements comprising the des gui.
+        components: the elements that comprise the des gui.
+        controls: the event-triggered controllers linked to the des gui.
+        figure_agg: the current matplotlib figure.
+        data_frame: the current pandas dataframe.
+        data_path: the path of the data source folder.
+    '''
     
     def __init__(self):
+        '''
+        The constructor for des_layout.
+        '''
         self.window = None
         self.layout = []
         self.components = {'components': False}
@@ -28,6 +40,9 @@ class des_layout(object):
         self.data_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "\data_source"
     
     def self_layout(self, **kwargs):
+        '''
+        The function to instantiate the elements & layout for des_layout.
+        '''
         sg.theme('Dark Blue 3')
         figure_w, figure_h = 650, 650
         
@@ -38,38 +53,43 @@ class des_layout(object):
         self.components['new_button'] = sg.Button(button_text = 'New DES')
         self.controls += [new_button.new]
         
-        self.components['upload_button'] = sg.Button(button_text = 'Upload CSV')
-        self.controls += [upload_button.upload]
-        
         self.controls += [exit_button.exit]
         
         self.layout = [
             [self.components['figure_select'],self.components['figure_upload']],
             [sg.Canvas(size=(figure_w, figure_h), key='-CANVAS-')],
             [sg.Text('Chat Placeholder')],
-            [self.components['new_button'],self.components['upload_button']]
+            [self.components['new_button']]
         ]
     
-    def fig_draw(self, values): 
-        if self.current_csv(values) :
-            choice = values['-LISTBOX-'][0]
-    
     def draw_figure(self, canvas, figure):
+        '''
+        The function to draw the current selected figure for des_layout.
+        '''
         figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
         figure_canvas_agg.draw()
         figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
         return figure_canvas_agg
 
     def delete_figure_agg(self):
+        '''
+        The function to delete the current figure for des_layout.
+        '''
         if self.figure_agg:
             self.figure_agg.get_tk_widget().forget()
         plt.close('all')
     
     def render(self):
+        '''
+        The function to render the current instance of des_layout.
+        '''
         if self.layout != []:
             self.window = sg.Window('Data Explorer', self.layout, grab_anywhere=False, finalize=True)
     
     def listen(self):
+        '''
+        The function to start the event loop for the current instance of des_layout.
+        '''
         if self.window != None:
             cont = True
             while cont == True:
