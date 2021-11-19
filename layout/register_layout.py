@@ -6,7 +6,7 @@ import controller.login.exit_button as exit_button
 
 class register_layout(object):
     '''
-    A class representing a data explorer screen.
+    A class representing a registration screen.
     
     Attributes:
         window: the window the register gui layout is applied to.
@@ -16,7 +16,9 @@ class register_layout(object):
     '''
     
     def __init__(self):
-        
+        '''
+        The constructor for register_layout.
+        '''
         self.window = None
         self.layout = []
         self.components = {'components': False}
